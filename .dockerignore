@@ -1,0 +1,27 @@
+# Dependências (O mais importante)
+node_modules
+**/node_modules
+
+# Pastas de Build
+dist
+.next
+out
+build
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Git e Docker
+.git
+.gitignore
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+.env*
+
+# Arquivos do Sistema
+.DS_Store
+Thumbs.db

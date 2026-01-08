@@ -1,0 +1,12 @@
+services:
+  server:
+    build: 
+      context: .
+      target: runner
+    restart: always
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: always

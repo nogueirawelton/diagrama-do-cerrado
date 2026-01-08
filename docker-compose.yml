@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - dc-network
+
+  server:
+    container_name: server
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT}:3030"
+    depends_on:
+      - db
+    networks:
+      - dc-network
+  app:
+    container_name: app
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:3000"
+    depends_on:
+      - server
+    networks:
+      - dc-network
+networks:
+  dc-network:
+
+volumes:
+  pg-data:

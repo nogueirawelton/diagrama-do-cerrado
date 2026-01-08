@@ -1,0 +1,21 @@
+services:
+  db:
+    ports:
+    - "${DB_PORT}:5432"
+  server:
+    build: 
+      context: .
+      target: node
+    working_dir: /home/node/server
+    volumes:
+      - ./server:/home/node/server
+    command: npm run start:dev
+
+  app:
+    build: 
+      context: .
+      target: node
+    working_dir: /home/node/app
+    volumes:
+      - ./app:/home/node/app
+    command: npm run dev
