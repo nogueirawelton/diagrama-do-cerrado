@@ -41,4 +41,5 @@ COPY --from=app-builder /home/node/app/public ./app/public
 COPY --from=app-builder /home/node/app/node_modules ./app/node_modules
 COPY --from=app-builder /home/node/app/package*.json ./app/
 
-CMD ["sh", "-c", "node server/dist/main.js & cd app && npm run start"]
+
+CMD ["sh", "-c", "node server/dist/database/seeds/index.js && node server/dist/main.js & cd app && npm run start"]

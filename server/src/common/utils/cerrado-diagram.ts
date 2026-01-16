@@ -11,6 +11,7 @@ interface AssetCandidate {
   currentGap: number;
   purchasedQuantity: number;
   isFractional: boolean;
+  minAmount: number;
 }
 
 export async function cerradoDiagram(
@@ -73,6 +74,8 @@ export async function cerradoDiagram(
             purchasedQuantity: 0,
 
             isFractional: isUsd,
+            minAmount:
+              category.category.apiReference == 'Crypto' ? 0.001 : 0.1,
           });
         }
       });
@@ -108,7 +111,7 @@ export async function cerradoDiagram(
 
       const calculatedQty = amountToSpend / bestCandidate.priceInBrl;
 
-      if (calculatedQty < 0.1) {
+      if (calculatedQty < bestCandidate.minAmount) {
         bestCandidate.currentGap = -1;
         continue;
       }
@@ -146,6 +149,8 @@ export async function cerradoDiagram(
 
     safetyIterations++;
   }
+
+  console.log(candidates);
 
   return candidates
     .filter((c) => c.purchasedQuantity > 0)

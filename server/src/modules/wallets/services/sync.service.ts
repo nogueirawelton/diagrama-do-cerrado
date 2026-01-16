@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { addHours, isAfter } from 'date-fns';
+import { getDollarRate } from 'src/common/utils/get-dollar-rate';
 import { CreateAssetDto } from 'src/modules/assets/dto/create-asset.dto';
 import { UpdateAssetDto } from 'src/modules/assets/dto/update-asset.dto';
 import { Category } from 'src/modules/assets/entities/category.entity';
@@ -139,9 +140,13 @@ export class SyncService {
       return asset;
     }
 
+    const isCrypto = category.apiReference == 'Crypto';
+
     const createAssetDto: CreateAssetDto = {
       ticker: apiAsset.ticker_name,
-      price: apiAsset.current_price,
+      price: isCrypto
+        ? apiAsset.current_price / (await getDollarRate())
+        : apiAsset.current_price,
       payout: apiAsset.payout || null,
       pl: apiAsset.p_l || null,
       pvp: apiAsset.p_vp || null,
@@ -152,7 +157,7 @@ export class SyncService {
       gnr: apiAsset.gnr || null,
       gnp: apiAsset.gnp || null,
       vacancy: apiAsset.vacancy || null,
-      currency: apiAsset.currency,
+      currency: isCrypto ? 'US$' : apiAsset.currency,
       category: category,
     };
 
