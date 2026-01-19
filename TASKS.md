@@ -1,0 +1,5 @@
+- [ ] Usar migrations em PROD e sync false
+- [ ] Esqueci minha senha
+- [ ] Login
+- [ ] Fazer o script ja considerar os valores novos na hora de sugerir no diagrama
+- [ ] Criar ddc.nogueirawelton.com.br e api.nogueirawelton.com.br -> jogar todas APIS AQUI
