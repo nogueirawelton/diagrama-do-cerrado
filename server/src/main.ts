@@ -10,6 +10,10 @@ async function bootstrap() {
   types.setTypeParser(1700, (val) => parseFloat(val));
   types.setTypeParser(20, (val) => parseInt(val, 10));
 
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

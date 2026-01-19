@@ -1,7 +1,4 @@
 services:
-  db:
-    ports:
-    - "${DB_PORT}:5432"
   server:
     build: 
       context: .
