@@ -1,6 +1,6 @@
 services:
   server:
-    build: 
+    build:
       context: .
       target: runner
     restart: always
