@@ -9,6 +9,4 @@ services:
     build:
       context: .
       target: runner
-      args:
-        - PREFIX=${PREFIX}
     restart: always

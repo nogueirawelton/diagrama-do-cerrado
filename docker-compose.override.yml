@@ -15,8 +15,6 @@ services:
     build:
       context: .
       target: node
-      args:
-        - PREFIX=${PREFIX}
     working_dir: /home/node/app
     volumes:
       - ./app:/home/node/app
