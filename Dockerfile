@@ -23,6 +23,9 @@ RUN npm run build
 FROM base AS app-builder
 WORKDIR /home/node/app
 
+ARG PREFIX
+ENV PREFIX=$PREFIX
+
 RUN npm install
 COPY app .
 RUN npm run build
