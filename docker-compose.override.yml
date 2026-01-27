@@ -9,7 +9,7 @@ services:
     working_dir: /home/node/server
     volumes:
       - ./server:/home/node/server
-    command: npm run start:dev
+    command: /bin/sh -c "npm run seed:run && npm run start:dev"
 
   app:
     build:

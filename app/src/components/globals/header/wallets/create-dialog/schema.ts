@@ -1,13 +1,13 @@
 import * as z from "zod";
 
 export const schema = z.object({
-  username: z.string().min(1, "Insira seu usuário!"),
-  password: z.string().min(1, "Insira sua senha!"),
+  name: z.string().min(1, "Preencha este campo!"),
+  walletNumber: z.string().min(1, "Preencha este campo!"),
 });
 
 export const defaultValues = {
-  username: "",
-  password: "",
+  name: "",
+  walletNumber: "",
 };
 
 export type FormData = z.infer<typeof schema>;

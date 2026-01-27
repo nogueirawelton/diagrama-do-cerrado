@@ -13,6 +13,10 @@
   --animate-fade-out: fadeOut 0.3s ease-in-out;
 }
 
+button {
+  @apply cursor-pointer;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -37,7 +37,6 @@ export class WalletsService {
           },
         ],
       });
-
       return await this.walletRepository.save(wallet);
     } catch (error) {
       if (error.code === '23505') {
@@ -59,7 +58,7 @@ export class WalletsService {
     });
   }
 
-  async findByWalletNumber(userId: number, walletNumber: number) {
+  async findByWalletNumber(userId: number, walletNumber: string) {
     const wallet = await this.walletRepository.findOne({
       where: {
         user: { id: userId },

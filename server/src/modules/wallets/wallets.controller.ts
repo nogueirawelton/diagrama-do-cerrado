@@ -52,7 +52,7 @@ export class WalletsController {
   @HttpCode(HttpStatus.OK)
   async findByWalletNumber(
     @CurrentUser() user: UserPayload,
-    @Param('walletNumber') walletNumber: number,
+    @Param('walletNumber') walletNumber: string,
   ) {
     const { sub } = user;
 

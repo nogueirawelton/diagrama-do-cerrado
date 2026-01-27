@@ -1,31 +1,30 @@
 import {
-  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
-  Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+  CurrentUser,
+  type UserPayload,
+} from '../auth/decorators/current-user.decorator';
+import { AtGuard } from '../auth/guards/at.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(ClassSerializerInterceptor)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get()
+  @UseGuards(AtGuard)
+  @Get('/me')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
-  findAll() {
-    return this.usersService.findAll();
+  findMe(@CurrentUser() user: UserPayload) {
+    const { sub } = user;
+
+    return this.usersService.findOne(sub);
   }
 }

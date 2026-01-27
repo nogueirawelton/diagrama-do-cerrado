@@ -1,7 +1,7 @@
 "use client";
 
 import { api, getErrorMessage } from "@/api";
-import { Input } from "@/components/globals/input";
+import { Input } from "@/components/utils/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog } from "radix-ui";
 import { ReactNode, useCallback, useState, useTransition } from "react";
@@ -32,7 +32,7 @@ export function RegisterDialog({ children }: RegisterDialogProps) {
     handleSubmit((data) => {
       startTransition(async () => {
         try {
-          await api.post("/users", data);
+          await api.post("/auth/register", data);
 
           setIsDialogOpen(false);
           reset();

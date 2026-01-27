@@ -8,7 +8,7 @@ export default function Home() {
         <div className="flex items-center text-white flex-col gap-2">
           <Image
             src="/logo.svg"
-            alt="Next.js logo"
+            alt="Logo"
             width={100}
             height={20}
             priority

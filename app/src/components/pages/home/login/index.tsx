@@ -1,9 +1,10 @@
 "use client";
 
-import { authAction } from "@/actions/authAction";
+import { login } from "@/actions/auth-action";
 import { api, getErrorMessage } from "@/api";
-import { Input } from "@/components/globals/input";
+import { Input } from "@/components/utils/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useCallback, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { PiCircleNotch, PiLock, PiUser } from "react-icons/pi";
@@ -13,6 +14,7 @@ import { defaultValues, schema } from "./schema";
 
 export function Login() {
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   const {
     control,
@@ -32,9 +34,8 @@ export function Login() {
             data: { access_token, refresh_token },
           } = await api.post("/auth/login", data);
 
-          await authAction(access_token, refresh_token);
-
-          reset();
+          await login(access_token, refresh_token);
+          router.push("/dashboard");
         } catch (err) {
           toast.error(getErrorMessage(err));
           console.log(err);

@@ -20,7 +20,7 @@ export class Wallet {
   name: string;
 
   @Column({ unique: true })
-  walletNumber: number;
+  walletNumber: string;
 
   @Column({ nullable: true })
   lastExternalSyncAt: Date;

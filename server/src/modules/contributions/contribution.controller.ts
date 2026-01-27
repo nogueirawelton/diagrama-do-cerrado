@@ -26,7 +26,7 @@ export class ContributionController {
   @HttpCode(HttpStatus.CREATED)
   async create(
     @CurrentUser() user: UserPayload,
-    @Param('walletNumber') walletNumber: number,
+    @Param('walletNumber') walletNumber: string,
     @Body() createContributionDto: CreateContributionDto,
   ) {
     const { sub } = user;
