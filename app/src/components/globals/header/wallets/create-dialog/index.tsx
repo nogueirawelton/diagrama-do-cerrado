@@ -5,10 +5,17 @@ import { Input } from "@/components/utils/input";
 import { useCategories } from "@/hooks/swr/use-categories";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, ScrollArea } from "radix-ui";
-import { ReactNode, useCallback, useState, useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { PiCircleNotch, PiX } from "react-icons/pi";
 import { toast } from "react-toastify";
+import { mutate } from "swr";
 import { CategoryTarget } from "./category-target";
 import { defaultValues, schema } from "./schema";
 
@@ -27,16 +34,37 @@ export function CreateDialog({ children }: CreateDialogProps) {
     formState: { errors },
     reset,
     handleSubmit,
+    watch,
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues,
   });
 
+  const { fields, replace } = useFieldArray({
+    control,
+    name: "targets",
+  });
+
+  const targets = watch("targets");
+
+  const totalPercentage = targets.reduce(
+    (acc, target) => acc + target.percentage,
+    0,
+  );
+
   const onSubmit = useCallback(
     handleSubmit((data) => {
       startTransition(async () => {
         try {
-          await api.post("/wallets", data);
+          await api.post("/wallets", {
+            ...data,
+            targets: data.targets.map((target) => ({
+              id: target.categoryId,
+              percentage: target.percentage,
+            })),
+          });
+
+          mutate("/wallets");
 
           setIsDialogOpen(false);
           reset();
@@ -49,6 +77,12 @@ export function CreateDialog({ children }: CreateDialogProps) {
     }),
     [],
   );
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      replace(categories.map((cat) => ({ categoryId: cat.id, percentage: 0 })));
+    }
+  }, [categories]);
 
   return (
     <Dialog.Root
@@ -117,16 +151,30 @@ export function CreateDialog({ children }: CreateDialogProps) {
 
               <ScrollArea.Root
                 type="auto"
-                className="pr-4 pt-4"
+                className="pr-4"
               >
                 <ScrollArea.Viewport className="h-[225px] 2xl:h-auto">
                   <div className="mt-4 flex overflow-auto flex-col gap-2">
-                    {categories?.map((category) => (
-                      <CategoryTarget
-                        key={category.id}
-                        category={category}
-                      />
-                    ))}
+                    {fields.map((field, index) => {
+                      const categoryOriginal = categories?.find(
+                        (c) => c.id === field.categoryId,
+                      );
+
+                      return (
+                        <Controller
+                          key={field.id}
+                          control={control}
+                          name={`targets.${index}.percentage`}
+                          render={({ field: { onChange, value } }) => (
+                            <CategoryTarget
+                              category={categoryOriginal!}
+                              value={value}
+                              onValueChange={(val) => onChange(Number(val))}
+                            />
+                          )}
+                        />
+                      );
+                    })}
                   </div>
                 </ScrollArea.Viewport>
 
@@ -136,8 +184,22 @@ export function CreateDialog({ children }: CreateDialogProps) {
               </ScrollArea.Root>
             </div>
 
+            <div className="flex text-secondary-dark items-center justify-between pr-4">
+              <strong>Total</strong>
+              <div className="font-medium">
+                <span
+                  data-warning={totalPercentage !== 100}
+                  className="data-[warning=true]:text-primary-light"
+                >
+                  {totalPercentage}%
+                </span>
+                <span> / 100%</span>
+              </div>
+            </div>
+
             <button
               type="submit"
+              disabled={pending || totalPercentage !== 100}
               className="h-12 rounded-md grid place-items-center cursor-pointer w-full bg-primary-light text-lg text-white font-medium"
             >
               {pending ? (

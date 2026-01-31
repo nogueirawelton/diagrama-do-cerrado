@@ -31,11 +31,11 @@ export class WalletsController {
   @HttpCode(HttpStatus.CREATED)
   create(
     @CurrentUser() user: UserPayload,
-    @Body() CreateWalletDto: CreateWalletDto,
+    @Body() createWalletDto: CreateWalletDto,
   ) {
     const { sub } = user;
 
-    return this.walletsService.create(sub, CreateWalletDto);
+    return this.walletsService.create(sub, createWalletDto);
   }
 
   @UseGuards(AtGuard)

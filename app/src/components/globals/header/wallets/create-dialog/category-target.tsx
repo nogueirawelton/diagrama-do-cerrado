@@ -1,21 +1,26 @@
 "use client";
 
 import { Category } from "@/@types/Category";
-import { useState } from "react";
 import { PiMinusBold, PiPlusBold } from "react-icons/pi";
 
-export function CategoryTarget({ category }: { category: Category }) {
-  const [amount, setAmount] = useState(0);
-
+export function CategoryTarget({
+  category,
+  value,
+  onValueChange,
+}: {
+  category: Category;
+  value: number;
+  onValueChange: (value: number) => void;
+}) {
   function handleAmountChange(value: string) {
-    const filteredValue = Number(value.replaceAll(/[^0-9]/g, ""));
+    const filteredValue = Number(value.replaceAll(/[^0-9-]/g, ""));
 
     if (filteredValue > 100) {
-      setAmount(100);
+      onValueChange(100);
     } else if (filteredValue < 0) {
-      setAmount(0);
+      onValueChange(0);
     } else {
-      setAmount(filteredValue);
+      onValueChange(filteredValue);
     }
   }
 
@@ -30,10 +35,7 @@ export function CategoryTarget({ category }: { category: Category }) {
         <button
           type="button"
           onClick={() => {
-            setAmount((prev) => {
-              if (prev <= 0) return 0;
-              return prev - 1;
-            });
+            handleAmountChange(String(value - 1));
           }}
           className="size-8 text-secondary-light grid place-items-center rounded-md aspect-square bg-zinc-100"
         >
@@ -44,7 +46,7 @@ export function CategoryTarget({ category }: { category: Category }) {
           <input
             type="text"
             className="w-[6ch] outline-none text-center px-2"
-            value={amount}
+            value={value}
             onChange={(e) => handleAmountChange(e.target.value)}
           />
           <span>%</span>
@@ -53,10 +55,7 @@ export function CategoryTarget({ category }: { category: Category }) {
         <button
           type="button"
           onClick={() => {
-            setAmount((prev) => {
-              if (prev >= 100) return 100;
-              return prev + 1;
-            });
+            handleAmountChange(String(value + 1));
           }}
           className="size-8 text-secondary-light grid place-items-center rounded-md aspect-square bg-zinc-100"
         >

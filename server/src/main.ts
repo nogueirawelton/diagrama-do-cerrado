@@ -19,9 +19,21 @@ async function bootstrap() {
       transform: true,
 
       exceptionFactory: (errors) => {
+        const getFirstErrorMessage = (error: any): string => {
+          if (error.constraints) {
+            return Object.values(error.constraints)[0] as string;
+          }
+          if (error.children && error.children.length > 0) {
+            return getFirstErrorMessage(error.children[0]);
+          }
+          return 'Validation Error';
+        };
+
+        const message = getFirstErrorMessage(errors[0]);
+
         throw new HttpException(
           {
-            message: Object.values(errors[0].constraints!)[0],
+            message: message,
             error: 'Validation Error',
             statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           },

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -16,27 +17,29 @@ export class WalletsService {
   ) {}
 
   async create(userId: number, createWalletDto: CreateWalletDto) {
+    const totalPercentage = createWalletDto.targets.reduce(
+      (acc, target) => acc + target.percentage,
+      0,
+    );
+
+    if (totalPercentage !== 100) {
+      throw new BadRequestException('Total de porcentagem deve ser 100.');
+    }
+
     try {
       const wallet = this.walletRepository.create({
         ...createWalletDto,
         user: {
           id: userId,
         },
-        targets: [
-          {
-            category: {
-              id: 1,
-            },
-            targetPercentage: 50.0,
+        targets: createWalletDto.targets.map((target) => ({
+          category: {
+            id: target.id,
           },
-          {
-            category: {
-              id: 5,
-            },
-            targetPercentage: 50.0,
-          },
-        ],
+          targetPercentage: target.percentage,
+        })),
       });
+
       return await this.walletRepository.save(wallet);
     } catch (error) {
       if (error.code === '23505') {
