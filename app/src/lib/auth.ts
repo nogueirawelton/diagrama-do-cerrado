@@ -54,10 +54,11 @@ async function refreshAccessToken(token: any) {
         Authorization: `Bearer ${token.refresh_token}`,
       },
     });
-
     return {
       ...token,
       access_token: data.access_token,
+      refresh_token: data.refresh_token ?? token.refresh_token, 
+      expires_at: data.expires_at,
     };
   } catch (error) {
     console.error("Erro ao renovar token:", error);
