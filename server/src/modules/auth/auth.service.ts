@@ -28,11 +28,11 @@ export class AuthService {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
         { sub: userId, username },
-        { secret: process.env.JWT_AUTH_SECRET_KEY, expiresIn: '15m' },
+        { secret: process.env.JWT_AUTH_SECRET_KEY, expiresIn: '15s' },
       ),
       this.jwtService.signAsync(
         { sub: userId, username },
-        { secret: process.env.JWT_REFRESH_SECRET_KEY, expiresIn: '7d' },
+        { secret: process.env.JWT_REFRESH_SECRET_KEY, expiresIn: '1m' },
       ),
     ]);
 
@@ -67,7 +67,12 @@ export class AuthService {
     }
   }
 
-  async login(authDto: AuthDto): Promise<Tokens> {
+  async login(authDto: AuthDto): Promise<
+    Partial<User> & {
+      tokens: Tokens;
+      expires_at: number;
+    }
+  > {
     const user = await this.usersRepository.findOneBy({
       username: authDto.username,
     });
@@ -86,7 +91,13 @@ export class AuthService {
 
     this.updateRefreshToken(user.id, tokens.refresh_token);
 
-    return tokens;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      tokens,
+      expires_at: this.jwtService.decode(tokens.access_token).exp,
+    };
   }
 
   async logout(userId: number) {

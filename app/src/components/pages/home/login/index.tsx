@@ -1,53 +1,30 @@
 "use client";
 
-import { login } from "@/actions/auth-action";
-import { api, getErrorMessage } from "@/api";
-import { Input } from "@/components/utils/input";
+import { Input } from "@/components/ui/input";
+import { useLogin } from "@/hooks/auth/use-login";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useCallback, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { PiCircleNotch, PiLock, PiUser } from "react-icons/pi";
-import { toast } from "react-toastify";
 import { RegisterDialog } from "../register-dialog";
 import { defaultValues, schema } from "./schema";
 
 export function Login() {
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
+  const { login, pending } = useLogin();
 
   const {
     control,
     formState: { errors },
-    reset,
     handleSubmit,
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues,
   });
 
-  const onSubmit = useCallback(
-    handleSubmit((data) => {
-      startTransition(async () => {
-        try {
-          const {
-            data: { access_token, refresh_token },
-          } = await api.post("/auth/login", data);
-
-          await login(access_token, refresh_token);
-          router.push("/dashboard");
-        } catch (err) {
-          toast.error(getErrorMessage(err));
-          console.log(err);
-        }
-      });
-    }),
-    [],
-  );
-
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(async (data) => {
+        await login(data);
+      })}
       className="w-full flex flex-col gap-4 max-w-sm mt-8"
     >
       <Controller

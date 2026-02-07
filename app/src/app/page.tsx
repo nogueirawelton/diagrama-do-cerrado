@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main className="w-screen grid-cols-2 h-screen lg:grid ">
-      <div className="bg-secondary-light rounded-r-3xl my-4  hidden px-4 lg:px-8 lg:grid place-items-center">
+      <div className="bg-secondary-light relative rounded-r-3xl my-4  hidden px-4 lg:px-8 lg:grid place-items-center">
         <div className="flex items-center text-white flex-col gap-2">
           <Image
             src="/logo.svg"
@@ -20,9 +20,13 @@ export default function Home() {
 
           <p className="mt-4 text-lg text-center max-w-xl">
             Onde a disciplina encontra o valor. <br /> Gerencie seus ativos com
-            a visão de longo prazo da AUVP.
+            visão de longo prazo.
           </p>
         </div>
+
+        <small className="absolute bottom-4 text-white right-6">
+          *Projeto construído para fins educacionais
+        </small>
       </div>
 
       <div className="grid bg-white h-screen lg:h-auto px-4 lg:px-8 place-items-center">

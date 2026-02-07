@@ -1,11 +1,15 @@
-import { Header } from "@/components/globals/header";
-import { Fragment, ReactNode } from "react";
+import { Header } from "@/components/shared/header";
+import { SWRProvider } from "@/providers/swr-provider";
+import { SessionProvider } from "next-auth/react";
+import { ReactNode } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <Fragment>
-      <Header />
-      {children}
-    </Fragment>
+    <SessionProvider>
+      <SWRProvider>
+        <Header />
+        {children}
+      </SWRProvider>
+    </SessionProvider>
   );
 }

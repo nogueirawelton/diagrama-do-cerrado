@@ -1,13 +1,10 @@
-"use client";
-
 import Image from "next/image";
 import { Menu } from "./menu";
-import { Wallets } from "./wallets";
 
 export function Header() {
   return (
     <header className="bg-secondary-dark">
-      <div className="flex justify-between items-center h-16 mx-auto px-4 lg:px-16">
+      <div className="flex justify-between items-center h-16 mx-auto px-4 container">
         <div className="flex items-center text-white gap-4">
           <Image
             src="/logo.svg"
@@ -22,10 +19,7 @@ export function Header() {
           </strong>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Wallets />
-          <Menu />
-        </div>
+        <Menu />
       </div>
     </header>
   );
