@@ -1,10 +1,10 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/auth/use-login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { PiCircleNotch, PiLock, PiUser } from "react-icons/pi";
+import { Input } from "../../../ui/input";
 import { RegisterDialog } from "../register-dialog";
 import { defaultValues, schema } from "./schema";
 

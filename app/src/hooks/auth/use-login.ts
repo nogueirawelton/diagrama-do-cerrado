@@ -1,6 +1,6 @@
 import { getErrorMessage } from "@/lib/api";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "react-toastify";
 
@@ -12,6 +12,8 @@ interface AuthData {
 export function useLogin() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const performLogin = async ({ username, password }: AuthData) => {
     startTransition(async () => {
@@ -26,7 +28,7 @@ export function useLogin() {
           throw new Error("Credenciais Inválidas");
         }
 
-        router.push("/dashboard");
+        router.push(callbackUrl || "/dashboard/wallet");
       } catch (err) {
         toast.error(getErrorMessage(err));
         console.log(err);

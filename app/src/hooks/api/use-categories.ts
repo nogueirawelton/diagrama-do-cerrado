@@ -6,7 +6,7 @@ export function useCategories() {
   const { data: session } = useSession();
 
   const { data, ...rest } = useSWR<Array<Category>>(
-    session ? ["/categories", session?.access_token] : null,
+    session ? ["/categories", session?.tokens.access_token] : null,
   );
 
   return {

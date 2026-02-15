@@ -3,29 +3,35 @@ import "next-auth/jwt";
 
 declare module "next-auth" {
   interface User {
-    id: string;
-    name: string;
-    email: string;
+    lastOpenedWalletNumber?: string;
     tokens: {
       access_token: string;
       refresh_token: string;
+      expires_at: number;
     };
-    expires_at: number;
   }
 
   interface Session {
+    tokens?: {
+      access_token: string;
+      refresh_token: string;
+      expires_at: number;
+    };
     user: {
-      id: string;
+      lastOpenedWalletNumber?: string;
     } & DefaultSession["user"];
-    access_token: string;
-    refresh_token: string;
+    error?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    access_token: string;
-    refresh_token: string;
-    expires_at: number;
+    lastOpenedWalletNumber?: string;
+    tokens?: {
+      access_token: string;
+      refresh_token: string;
+      expires_at: number;
+    };
+    error?: string;
   }
 }

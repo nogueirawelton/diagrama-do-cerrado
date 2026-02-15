@@ -5,7 +5,7 @@ import useSWR from "swr";
 export function useWallets() {
   const { data: session } = useSession();
   const { data, ...rest } = useSWR<Array<Wallet>>(
-    session ? ["/wallets", session?.access_token] : null,
+    session ? ["/wallets", session?.tokens.access_token] : null,
   );
 
   return {

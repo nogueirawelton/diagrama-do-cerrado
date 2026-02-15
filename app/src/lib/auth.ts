@@ -1,6 +1,9 @@
 import axios from "axios";
 import NextAuth, { User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
+
+const API_URL = process.env.API_URL;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -8,11 +11,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials): Promise<User | null> {
         try {
           const { data } = await axios.post(
-            "http://server:3030/auth/login",
+            `${API_URL}/auth/login`,
             credentials,
           );
 
-          return data;
+          return {
+            ...data.user,
+            tokens: data.tokens,
+            lastOpenedWalletNumber: data.user.lastOpenedWalletNumber,
+          };
         } catch (error) {
           return null;
         }
@@ -22,12 +29,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.access_token = user.tokens.access_token;
-        token.refresh_token = user.tokens.refresh_token;
-        token.expires_at = user.expires_at;
+        token.lastOpenedWalletNumber = user.lastOpenedWalletNumber;
+        token.tokens = user.tokens;
+        return token;
       }
 
-      if (Date.now() < (token.expires_at as number) * 1000 - 60000) {
+      const expiresAt = Number(token.tokens?.expires_at) * 1000;
+      const bufferTime = 60000;
+
+      if (Date.now() < expiresAt - bufferTime) {
         return token;
       }
 
@@ -35,9 +45,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async session({ session, token }) {
-      session.access_token = token.access_token;
-      session.refresh_token = token.refresh_token;
-
+      if (token.tokens) {
+        session.tokens = token.tokens;
+        session.user.lastOpenedWalletNumber = token.lastOpenedWalletNumber;
+      }
       return session;
     },
   },
@@ -47,18 +58,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
 });
 
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
-    const { data } = await axios.get("http://server:3030/auth/refresh", {
+    const { data } = await axios.get(`${API_URL}/auth/refresh`, {
       headers: {
-        Authorization: `Bearer ${token.refresh_token}`,
+        Authorization: `Bearer ${token.tokens?.refresh_token}`,
       },
     });
+
     return {
       ...token,
-      access_token: data.access_token,
-      refresh_token: data.refresh_token ?? token.refresh_token, 
-      expires_at: data.expires_at,
+      tokens: {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token ?? token.tokens?.refresh_token,
+        expires_at: data.expires_at,
+      },
     };
   } catch (error) {
     console.error("Erro ao renovar token:", error);

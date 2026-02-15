@@ -3,7 +3,7 @@ export type User = {
   name: string;
   email: string;
   username: string;
+  lastOpenedWalletNumber: string;
   createdAt: string;
   updatedAt: string;
 };
-

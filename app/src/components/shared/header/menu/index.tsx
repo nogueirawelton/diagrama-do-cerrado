@@ -2,17 +2,17 @@
 
 import { Lazy } from "@/components/ui/lazy";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useApi } from "@/hooks/api/use-api";
 import { useWallets } from "@/hooks/api/use-wallets";
 import { useSession } from "next-auth/react";
 import { Collapsible, Popover } from "radix-ui";
 import { PiCaretDown, PiList, PiSignOut, PiWallet } from "react-icons/pi";
 import { Logout } from "../logout";
+import { CreateWalletDialog } from "./create-wallet-dialog";
+import { WalletCard } from "./wallet";
 
 export function Menu() {
   const { data: session } = useSession();
   const { wallets } = useWallets();
-  const { get } = useApi();
 
   const initial = session?.user.name
     ?.split(" ")
@@ -54,34 +54,34 @@ export function Menu() {
             </div>
           </div>
 
-          <nav className="border-y border-zinc-200 py-8 my-2">
+          <nav className="border-y border-zinc-200 py-4 my-2">
             <Collapsible.Root>
-              <Collapsible.Trigger className="flex text-secondary-light data-[state=open]:bg-zinc-100/75 w-full px-4 hover:bg-zinc-100/75 rounded-md transition-all duration-500 h-12 justify-between items-center gap-3">
+              <Collapsible.Trigger className="flex group text-secondary-light data-[state=open]:bg-gray-100/50 w-full px-4 hover:bg-gray-100/50 rounded-md transition-all duration-500 h-12 justify-between items-center gap-3">
                 <span className="flex items-center gap-3">
                   <PiWallet className="size-6 text-zinc-500" />
                   Minhas Carteiras
                 </span>
 
-                <PiCaretDown className="text-secondary-light size-4" />
+                <PiCaretDown className="text-secondary-light size-4 group-data-[state=open]:rotate-180 transition-all duration-500" />
               </Collapsible.Trigger>
 
-              <Collapsible.Content>
-                {wallets?.map((wallet) => (
-                  <div
-                    key={wallet.id}
-                    onClick={() => {
-                      get(`/wallets/${wallet.walletNumber}`);
-                    }}
-                  >
-                    {wallet.name}
-                  </div>
-                ))}
+              <Collapsible.Content className="data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up overflow-hidden">
+                <div className="flex flex-col gap-2 pt-2">
+                  {wallets?.map((wallet) => (
+                    <WalletCard
+                      key={wallet.id}
+                      wallet={wallet}
+                    />
+                  ))}
+                </div>
+
+                <CreateWalletDialog />
               </Collapsible.Content>
             </Collapsible.Root>
           </nav>
 
           <Logout>
-            <button className="flex text-secondary-light w-full px-4 hover:bg-zinc-100/75 rounded-md transition-all duration-500 h-12 items-center gap-3">
+            <button className="flex text-secondary-light w-full px-4 hover:bg-gray-100/50 rounded-md transition-all duration-500 h-12 items-center gap-3">
               <PiSignOut className="size-6 text-zinc-500" />
               Sair
             </button>
