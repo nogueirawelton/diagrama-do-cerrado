@@ -16,7 +16,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script: |
-            cd /www/wwwroot/lab.nogueirawelton.com.br/app/diagrama-do-cerrado
+            cd /root/nogueirawelton/diagrama-do-cerrado
 
             git reset --hard origin/master
 

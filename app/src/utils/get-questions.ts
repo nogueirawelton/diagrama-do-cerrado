@@ -19,7 +19,7 @@ const questions = [
         description:
           "Esta categoria garante que a empresa não vá à falência na próxima crise.",
         questions: [
-          "Endividamento Saudável: A relação Dívida Líquida/EBITDA é menor que 2 (a empresa quita a dívida em menos de 2 anos de geração de caixa)?",
+          "Endividamento Saudável: A relação Dívida Líquida/EBITDA é menor que 2 (a empresa quita a dívida em menos de 2 anos de geração de caixa) / Índice de Basileia (>12%).?",
           "Poder de Sobrevivência: A empresa tem mais de 30 anos de fundação (provou que sobrevive a diferentes ciclos econômicos)?",
           "Perenidade do Setor: O setor de atuação existe há mais de 100 anos (baixo risco de ser substituído por uma tecnologia disruptiva amanhã)?",
           "Combate à Obsolescência: A empresa investe ativamente em Pesquisa, Desenvolvimento e Inovação para não ficar para trás?",
@@ -41,7 +41,7 @@ const questions = [
         description: "Esta categoria foca em como você será remunerado.",
         questions: [
           "Cultura de Dividendos: Existe um histórico ininterrupto e sólido de pagamento de dividendos aos acionistas?",
-          "Sustentabilidade do Payout: O Payout (porcentagem do lucro distribuído) está entre 30% e 70%, garantindo que sobra dinheiro para a empresa crescer?",
+          "Sustentabilidade do Payout: O Payout (porcentagem do lucro distribuído) está entre 20% e 70%, garantindo que sobra dinheiro para a empresa crescer?",
         ],
       },
     ],
@@ -54,42 +54,90 @@ const questions = [
         description:
           "Avalia o que sustenta o dinheiro: a qualidade física dos imóveis ou o risco de crédito das dívidas.",
         questions: [
-          "Qualidade do Ativo/Crédito: No Tijolo, os imóveis são Classe A? No Papel/Infra, o rating das dívidas é majoritariamente Investment Grade (A ou superior)?",
-          "Diversificação de Risco: O fundo possui mais de 10 ativos diferentes (prédios ou contratos de dívida)?",
-          "Localização/Setor Estratégico: Os imóveis estão em regiões nobres ou as debêntures de infraestrutura são de setores vitais?",
-          "Baixa Concentração: Nenhum inquilino ou devedor representa mais de 20% da receita total do fundo?",
+          "Qualidade do Ativo/Crédito: No Tijolo, os imóveis são Classe A? No Papel/Infra, o rating médio é Investment Grade (A ou superior)?",
+          "Diversificação de Risco: O fundo possui mais de 10 ativos (prédios ou contratos de dívida) e não é monoativo/monoinquilino?",
+          "Localização e Setor: Os imóveis estão em regiões nobres (eixos comerciais) ou as dívidas são de setores perenes/vitais?",
+          "Baixa Concentração: Nenhum inquilino ou devedor (CRI/Debênture) representa mais de 20% da receita total do fundo?",
         ],
       },
       {
-        name: "Gestão e Histórico",
+        name: "Gestão e Governança",
         description:
-          "Analisa quem pilota o fundo, a transparência das informações e a facilidade de entrar ou sair do investimento.",
+          "Analisa quem pilota o fundo e o respeito ao patrimônio do cotista minoritário.",
         questions: [
-          "Experiência do Gestor: A gestora tem mais de 10 anos de mercado e um histórico sólido em ciclos de crise?",
-          "Transparência e Relatórios: Os relatórios mensais são claros, detalhados e explicam exatamente onde o dinheiro está investido?",
-          "Alinhamento de Interesses: A gestora possui participação no próprio fundo ou as taxas de performance são justas?",
-          "Liquidez de Mercado: O volume médio de negociação diária é superior a R$ 1 milhão?",
+          "Experiência e Alinhamento: A gestora tem mais de 10 anos de mercado e possui participação relevante no próprio fundo?",
+          "Histórico de Emissões: As últimas emissões foram feitas acima ou no Valor Patrimonial (evitando a diluição injusta do cotista)?",
+          "Transparência: Os relatórios mensais são detalhados, frequentes e fáceis de entender para um investidor comum?",
+          "Liquidez de Mercado: O volume médio de negociação diária é superior a R$ 1 milhão (garante saída em caso de emergência)?",
         ],
       },
       {
-        name: "Estrutura Financeira (O Sarrafo)",
+        name: "Estrutura Financeira",
         description:
-          "Mede a proteção contra a inflação, o preço justo em relação ao valor patrimonial e a eficiência das taxas.",
+          "Mede o preço justo, a eficiência operacional e o controle de dívidas internas.",
         questions: [
-          "Proteção contra Inflação: No Tijolo, os contratos são corrigidos por IPCA/IGP-M? No Papel/Infra, a maior parte da carteira é IPCA+ ou CDI+?",
-          "Dividend Yield vs. Risco: O rendimento é coerente com o risco? (FI-Infra > Tesouro IPCA+; Papel > Tijolo)",
-          "P/VPA (Preço justo): O fundo está sendo negociado próximo ou abaixo do Valor Patrimonial (P/VPA < 1,05)?",
-          "Taxas de Administração: O custo total (Adm + Gestão) é menor que 1,2% ao ano?",
+          "Preço Justo (P/VPA): O fundo está sendo negociado em patamar aceitável? (Papel/Infra < 1,05; Tijolo próximo ao custo de reposição)?",
+          "Controle de Alavancagem: A dívida interna do fundo (se houver) é inferior a 20% do patrimônio e tem prazos confortáveis?",
+          "Taxas de Administração: O custo total (Adm + Gestão) é competitivo e menor que 1,2% ao ano?",
+          "Proteção Real: Os contratos (Tijolo) ou ativos (Papel/Infra) possuem indexadores que protegem contra a inflação (IPCA/IGP-M)?",
         ],
       },
       {
-        name: "Resiliência (O Escudo)",
+        name: "Resiliência e Escudo",
         description:
-          "Foca na previsibilidade de longo prazo e na capacidade do fundo de resistir a calotes ou desocupação.",
+          "Foca na previsibilidade de longo prazo e na capacidade de resistir a crises.",
         questions: [
-          "Vacância/Inadimplência: A vacância (Tijolo) ou a inadimplência (Papel/Infra) é menor que 5% historicamente?",
-          "Isenção e Tributação: O fundo cumpre os requisitos para manter a isenção de IR para pessoa física?",
-          "Duração (Duration): O prazo médio dos contratos de aluguel ou das dívidas é superior a 5 anos?",
+          "Histórico de Vacância/Inadimplência: A vacância física (Tijolo) ou atrasos nos pagamentos (Papel) são historicamente menores que 10%?",
+          "Duração dos Contratos (Duration): O prazo médio dos contratos de aluguel ou vencimento das dívidas é superior a 5 anos?",
+          "Consistência de Dividendos: O fundo manteve pagamentos regulares mesmo em períodos de estresse econômico ou pandemia?",
+        ],
+      },
+    ],
+  },
+  {
+    category: "Stock",
+    categories: [
+      {
+        name: "Dominância e Fosso Econômico (Moat)",
+        description:
+          "Avalia se a empresa possui uma vantagem competitiva inalcançável e escala global.",
+        questions: [
+          "Liderança Global: A empresa é líder ou top 3 em seu segmento em escala mundial?",
+          "Fosso Econômico (Moat): A empresa possui marca forte, patentes ou efeito de rede que impede a entrada de concorrentes?",
+          "Receita Diversificada: A receita provém de múltiplos países, não dependendo exclusivamente da economia americana?",
+          "Poder de Preço (Pricing Power): A empresa consegue repassar a inflação para seus preços sem perder volume de vendas?",
+        ],
+      },
+      {
+        name: "Eficiência e Geração de Caixa",
+        description:
+          "Foca no padrão ouro de rentabilidade americana e no fluxo de caixa livre.",
+        questions: [
+          "Free Cash Flow (FCF): A empresa é uma máquina de gerar caixa livre (caixa operacional menos investimentos) positivo e crescente?",
+          "Retorno sobre Capital (ROIC): O ROIC é consistentemente superior a 15% (padrão de excelência global)?",
+          "Margens Robustas: A Margem Líquida é superior a 10% e estável mesmo com o aumento de custos de produção?",
+          "Crescimento Histórico: A Receita (Revenue) e o Lucro por Ação (EPS) cresceram em média mais de 7% ao ano nos últimos 5 anos?",
+        ],
+      },
+      {
+        name: "Saúde Financeira e Alinhamento",
+        description:
+          "Mede o risco de crédito e como a empresa devolve valor ao acionista.",
+        questions: [
+          "Relação Dívida/EBITDA: A dívida líquida é inferior a 2,5x o EBITDA (ou o Net Debt/FCF é saudável)?",
+          "Recompra de Ações (Buybacks): A empresa possui um histórico de recomprar e cancelar ações, aumentando sua participação como sócio?",
+          "Cultura de Dividendos: Se paga dividendos, o histórico é crescente (Dividend Aristocrats) e o Payout é sustentável?",
+          "Qualidade da Gestão: O CEO e a diretoria possuem histórico de boa alocação de capital e transparência com o mercado?",
+        ],
+      },
+      {
+        name: "Resiliência e Perenidade",
+        description:
+          "O escudo contra a obsolescência tecnológica e crises globais.",
+        questions: [
+          "P&D e Inovação: A empresa investe uma porcentagem relevante da receita em Pesquisa e Desenvolvimento para evitar a obsolescência?",
+          "Sobrevivência a Ciclos: A empresa passou por crises globais (2000, 2008, 2020) sem comprometer sua estrutura de capital?",
+          "Risco Regulatório/Antitruste: A empresa possui baixo risco de ser desmembrada ou severamente multada por órgãos reguladores?",
         ],
       },
     ],

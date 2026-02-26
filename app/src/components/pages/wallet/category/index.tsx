@@ -13,6 +13,7 @@ import {
 import { RateDialog } from "./rate-dialog";
 
 type CategoryProps = {
+  walletNumber: string;
   category: CategoryType & { positions: Array<WalletPosition> };
   targets: Array<Target>;
   balances: Array<CategoryBalance>;
@@ -240,7 +241,11 @@ export function Category({ category, targets, balances }: CategoryProps) {
                     %
                   </td>
                   <td className="text-center border-r border-zinc-200/75 h-16">
-                    <RateDialog category={category} position={position} />
+                    <RateDialog
+                      walletNumber={walletNumber}
+                      category={category}
+                      position={position}
+                    />
                   </td>
                 </tr>
               ))}

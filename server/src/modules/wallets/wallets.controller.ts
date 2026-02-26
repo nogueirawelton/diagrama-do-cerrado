@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import {
 } from '../auth/decorators/current-user.decorator';
 import { AtGuard } from '../auth/guards/at.guard';
 import { CreateWalletDto } from './dto/create-wallet.dto';
+import { UpdateWalletPositionRateDto } from './dto/update-wallet-position-rate.dto';
 import { WalletPosition } from './entities/wallet-position.entity';
 import { WalletsService } from './services/wallets.service';
 
@@ -83,5 +85,22 @@ export class WalletsController {
     );
 
     return { ...wallet, categories };
+  }
+
+  @UseGuards(AtGuard)
+  @Patch('/positions/:positionId')
+  @HttpCode(HttpStatus.OK)
+  async updateWalletPositionRate(
+    @CurrentUser() user: UserPayload,
+    @Param('positionId') positionId: number,
+    @Body() updateWalletPositionRateDto: UpdateWalletPositionRateDto,
+  ) {
+    const { sub } = user;
+
+    return this.walletsService.updateWalletPositionRate(
+      sub,
+      positionId,
+      updateWalletPositionRateDto,
+    );
   }
 }

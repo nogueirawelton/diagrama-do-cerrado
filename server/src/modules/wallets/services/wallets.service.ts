@@ -10,6 +10,7 @@ import { Category } from 'src/modules/assets/entities/category.entity';
 import { UsersService } from 'src/modules/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateWalletDto } from '../dto/create-wallet.dto';
+import { UpdateWalletPositionRateDto } from '../dto/update-wallet-position-rate.dto';
 import { CategoryBalance } from '../entities/category-balance.entity';
 import { CategoryTarget } from '../entities/category-target.entity';
 import { WalletPosition } from '../entities/wallet-position.entity';
@@ -21,6 +22,8 @@ export class WalletsService {
   constructor(
     @InjectRepository(Wallet)
     private walletRepository: Repository<Wallet>,
+    @InjectRepository(WalletPosition)
+    private walletPositionRepository: Repository<WalletPosition>,
 
     private i10Service: I10Service,
     private usersService: UsersService,
@@ -237,5 +240,39 @@ export class WalletsService {
         },
       });
     });
+  }
+
+  async updateWalletPositionRate(
+    userId: number,
+    positionId: number,
+    updateWalletPositionRateDto: UpdateWalletPositionRateDto,
+  ) {
+    const position = await this.walletPositionRepository.findOne({
+      where: {
+        id: positionId,
+      },
+      relations: {
+        wallet: true,
+      },
+    });
+
+    if (!position) {
+      throw new NotFoundException('Posição não encontrada.');
+    }
+
+    const wallet = await this.findByWalletNumber(
+      userId,
+      position.wallet.walletNumber,
+    );
+
+    if (!wallet) {
+      throw new NotFoundException('Carteira não encontrada.');
+    }
+
+    position.rate = updateWalletPositionRateDto.rate;
+
+    await this.walletPositionRepository.save(position);
+
+    return wallet;
   }
 }

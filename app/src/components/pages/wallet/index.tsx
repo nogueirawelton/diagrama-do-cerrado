@@ -111,6 +111,7 @@ export function WalletContent({ id }: WalletContentProps) {
               {wallet?.categories.map((category) => (
                 <Category
                   key={category.id}
+                  walletNumber={wallet.walletNumber}
                   category={category}
                   targets={wallet.targets}
                   balances={wallet.categoryBalances}
