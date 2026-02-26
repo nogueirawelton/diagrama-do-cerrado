@@ -28,11 +28,11 @@ export class AuthService {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
         { sub: userId, username },
-        { secret: process.env.JWT_AUTH_SECRET_KEY, expiresIn: '15s' },
+        { secret: process.env.JWT_AUTH_SECRET_KEY, expiresIn: '7d' },
       ),
       this.jwtService.signAsync(
         { sub: userId, username },
-        { secret: process.env.JWT_REFRESH_SECRET_KEY, expiresIn: '1m' },
+        { secret: process.env.JWT_REFRESH_SECRET_KEY, expiresIn: '7d' },
       ),
     ]);
 
@@ -67,14 +67,15 @@ export class AuthService {
     }
   }
 
-  async login(authDto: AuthDto): Promise<
-    Partial<User> & {
-      tokens: Tokens;
-      expires_at: number;
-    }
-  > {
-    const user = await this.usersRepository.findOneBy({
-      username: authDto.username,
+  async login(authDto: AuthDto): Promise<{
+    user: Partial<User> & { lastOpenedWalletNumber?: string };
+    tokens: Tokens & { expires_at: number };
+  }> {
+    const user = await this.usersRepository.findOne({
+      where: { username: authDto.username },
+      relations: {
+        lastOpenedWallet: true,
+      },
     });
 
     if (!user) throw new UnauthorizedException('Usuário ou senha inválidos');
@@ -92,11 +93,16 @@ export class AuthService {
     this.updateRefreshToken(user.id, tokens.refresh_token);
 
     return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      tokens,
-      expires_at: this.jwtService.decode(tokens.access_token).exp,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        lastOpenedWalletNumber: user.lastOpenedWallet?.walletNumber,
+      },
+      tokens: {
+        ...tokens,
+        expires_at: this.jwtService.decode(tokens.access_token).exp,
+      },
     };
   }
 
@@ -106,12 +112,23 @@ export class AuthService {
     });
   }
 
-  async refreshToken(userId: number, refreshToken?: string): Promise<Tokens> {
+  async refreshToken(
+    userId: number,
+    refreshToken?: string,
+  ): Promise<{
+    user: Partial<User> & { lastOpenedWalletNumber?: string };
+    tokens: Tokens & { expires_at: number };
+  }> {
     if (!refreshToken) {
       throw new UnauthorizedException('Token ausente');
     }
 
-    const user = await this.usersRepository.findOneBy({ id: userId });
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: {
+        lastOpenedWallet: true,
+      },
+    });
 
     if (!user || !user.refreshToken) {
       throw new UnauthorizedException('Usuário ou token inválidos');
@@ -129,6 +146,17 @@ export class AuthService {
 
     await this.updateRefreshToken(user.id, tokens.refresh_token);
 
-    return tokens;
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        lastOpenedWalletNumber: user.lastOpenedWallet?.walletNumber,
+      },
+      tokens: {
+        ...tokens,
+        expires_at: this.jwtService.decode(tokens.access_token).exp,
+      },
+    };
   }
 }

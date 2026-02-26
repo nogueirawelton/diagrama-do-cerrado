@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,6 +39,10 @@ export class User {
   @Exclude()
   @Column({ type: 'varchar', nullable: true })
   refreshToken: string | null;
+
+  @ManyToOne(() => Wallet, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn()
+  lastOpenedWallet: Wallet | null;
 
   @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallets: Array<Wallet>;

@@ -6,7 +6,7 @@ type SkeletonProps = ComponentProps<"div">;
 export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
-      className={twMerge("animate-pulse bg-zinc-500", className)}
+      className={twMerge("animate-pulse bg-zinc-100", className)}
       {...props}
     />
   );

@@ -4,11 +4,13 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Wallet } from './wallet.entity';
 
 @Entity('wallet_position')
+@Unique(['wallet', 'asset'])
 export class WalletPosition {
   @PrimaryGeneratedColumn()
   id: number;
@@ -24,6 +26,21 @@ export class WalletPosition {
 
   @Column({ default: 10, type: 'int', nullable: true })
   rate: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  appreciation: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  weightedReturn: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  percentWallet: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  equityTotal: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  equityBrl: number;
 
   @UpdateDateColumn()
   updatedAt: Date;

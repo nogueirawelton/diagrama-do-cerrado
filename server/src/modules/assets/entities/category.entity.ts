@@ -1,20 +1,14 @@
 import { CategoryTarget } from 'src/modules/wallets/entities/category-target.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Asset } from './asset.entity';
 
 @Entity('categories')
 export class Category {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ unique: true })
-  apiReference: string;
-
-  @Column({ unique: true })
-  name: string;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
-  icon: string;
+  name: string;
 
   @OneToMany(() => Asset, (asset) => asset.category)
   assets: Array<Asset>;

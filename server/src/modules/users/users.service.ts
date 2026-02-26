@@ -1,5 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Wallet } from '../wallets/entities/wallet.entity';
 import { User } from './entities/user.entity';
 
 export class UsersService {
@@ -9,6 +10,15 @@ export class UsersService {
   ) {}
 
   findOne(userId: number) {
-    return this.usersRepository.findOneBy({ id: userId });
+    return this.usersRepository.findOne({
+      where: { id: userId },
+      relations: {
+        lastOpenedWallet: true,
+      },
+    });
+  }
+
+  updateLastOpenedWallet(userId: number, wallet: Wallet) {
+    return this.usersRepository.update(userId, { lastOpenedWallet: wallet });
   }
 }

@@ -28,27 +28,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Login Inicial
       if (user) {
         token.lastOpenedWalletNumber = user.lastOpenedWalletNumber;
         token.tokens = user.tokens;
+
         return token;
       }
 
+      // Verifica se o token ainda é válido (com buffer de 60s)
       const expiresAt = Number(token.tokens?.expires_at) * 1000;
-      const bufferTime = 60000;
+      const now = Date.now();
 
-      if (Date.now() < expiresAt - bufferTime) {
+      if (now < expiresAt - 60000) {
+        console.log("✔ USANDO TOKEN ANTIGO");
         return token;
       }
 
-      return await refreshAccessToken(token);
+      return refreshAccessToken(token);
+
+      // if (!authLock.refreshPromise) {
+      //   authLock.refreshPromise = refreshAccessToken(token).finally(() => {
+      //     authLock.refreshPromise = null;
+      //   });
+      // }
+
+      // return await authLock.refreshPromise;
     },
 
     async session({ session, token }) {
       if (token.tokens) {
         session.tokens = token.tokens;
         session.user.lastOpenedWalletNumber = token.lastOpenedWalletNumber;
+        session.error = token.error;
       }
+
       return session;
     },
   },
@@ -59,6 +73,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 });
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
+  console.log("✔ BUSCANDO TOKEN NOVO");
+
   try {
     const { data } = await axios.get(`${API_URL}/auth/refresh`, {
       headers: {
@@ -66,16 +82,11 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       },
     });
 
-    return {
-      ...token,
-      tokens: {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token ?? token.tokens?.refresh_token,
-        expires_at: data.expires_at,
-      },
-    };
+    token.lastOpenedWalletNumber = data.user.lastOpenedWalletNumber;
+    token.tokens = data.tokens;
   } catch (error) {
-    console.error("Erro ao renovar token:", error);
-    return { ...token, error: "RefreshAccessTokenError" };
+    token.error = "RefreshAccessTokenError";
+  } finally {
+    return token;
   }
 }

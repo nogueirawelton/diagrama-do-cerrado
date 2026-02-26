@@ -4,17 +4,14 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
 
 @Entity('assets')
 export class Asset {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ unique: true })
+  @PrimaryColumn()
   ticker: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
@@ -52,6 +49,9 @@ export class Asset {
 
   @Column()
   currency: string;
+
+  @Column()
+  url: string;
 
   @UpdateDateColumn()
   updatedAt: Date;

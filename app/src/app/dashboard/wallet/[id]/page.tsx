@@ -1,3 +1,5 @@
+import { WalletContent } from "@/components/pages/wallet";
+
 export default async function WalletPage({
   params,
 }: {
@@ -5,5 +7,5 @@ export default async function WalletPage({
 }) {
   const { id } = await params;
 
-  return <div>WalletPage {id}</div>;
+  return <WalletContent id={id} />;
 }

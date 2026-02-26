@@ -1,6 +1,4 @@
 export type Category = {
-  id: number;
-  apiReference: string;
+  id: string;
   name: string;
-  icon: string;
 };

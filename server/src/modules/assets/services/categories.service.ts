@@ -10,9 +10,9 @@ export class CategoriesService {
     private categoriesRepository: Repository<Category>,
   ) {}
 
-  findByApiReference(apiReference: string) {
+  findByById(id: string) {
     return this.categoriesRepository.findOneBy({
-      apiReference,
+      id,
     });
   }
 

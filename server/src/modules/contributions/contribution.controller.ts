@@ -7,7 +7,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { cerradoDiagram } from 'src/common/utils/cerrado-diagram';
 import { getDollarRate } from 'src/common/utils/get-dollar-rate';
 import {
   CurrentUser,
@@ -38,6 +37,6 @@ export class ContributionController {
 
     const rate = await getDollarRate();
 
-    return cerradoDiagram(createContributionDto.totalAmount, wallet, rate);
+    return [];
   }
 }

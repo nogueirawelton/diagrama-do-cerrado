@@ -1,13 +1,8 @@
 import { Category } from "@/@types/Category";
-import { useSession } from "next-auth/react";
 import useSWR from "swr";
 
 export function useCategories() {
-  const { data: session } = useSession();
-
-  const { data, ...rest } = useSWR<Array<Category>>(
-    session ? ["/categories", session?.tokens.access_token] : null,
-  );
+  const { data, ...rest } = useSWR<Array<Category>>("/categories");
 
   return {
     categories: data,

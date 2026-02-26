@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcher } from "@/lib/api";
+import { api } from "@/lib/api";
 import { ReactNode } from "react";
 import { SWRConfig } from "swr";
 
@@ -8,11 +8,12 @@ export function SWRProvider({ children }: { children: ReactNode }) {
   return (
     <SWRConfig
       value={{
-        fetcher,
+        fetcher: async (url) => {
+          const res = await api.get(url);
+          return res.data;
+        },
 
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        keepPreviousData: true,
+        errorRetryCount: 0,
       }}
     >
       {children}

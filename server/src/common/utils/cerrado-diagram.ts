@@ -1,5 +1,4 @@
 import { Wallet } from 'src/modules/wallets/entities/wallet.entity';
-import { parseWallet } from './parse-wallet';
 
 interface AssetCandidate {
   categoryName: string;
@@ -19,7 +18,7 @@ export async function cerradoDiagram(
   wallet: Wallet,
   usdToBrlRate: number,
 ) {
-  const parsedWallet = await parseWallet(wallet);
+  const parsedWallet = wallet as any;
 
   let totalEquityBrl = 0;
 
@@ -74,8 +73,7 @@ export async function cerradoDiagram(
             purchasedQuantity: 0,
 
             isFractional: isUsd,
-            minAmount:
-              category.category.apiReference == 'Crypto' ? 0.001 : 0.1,
+            minAmount: category.category.id == 'Crypto' ? 0.001 : 0.1,
           });
         }
       });

@@ -8,34 +8,32 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { addHours, isAfter } from 'date-fns';
-import { parseWallet } from 'src/common/utils/parse-wallet';
+import { Category } from '../assets/entities/category.entity';
 import {
   CurrentUser,
   type UserPayload,
 } from '../auth/decorators/current-user.decorator';
 import { AtGuard } from '../auth/guards/at.guard';
 import { CreateWalletDto } from './dto/create-wallet.dto';
-import { SyncService } from './services/sync.service';
+import { WalletPosition } from './entities/wallet-position.entity';
 import { WalletsService } from './services/wallets.service';
 
 @Controller('wallets')
 export class WalletsController {
-  constructor(
-    private walletsService: WalletsService,
-    private syncService: SyncService,
-  ) {}
+  constructor(private walletsService: WalletsService) {}
 
   @UseGuards(AtGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(
+  async create(
     @CurrentUser() user: UserPayload,
     @Body() createWalletDto: CreateWalletDto,
   ) {
     const { sub } = user;
 
-    return this.walletsService.create(sub, createWalletDto);
+    const wallet = await this.walletsService.create(sub, createWalletDto);
+
+    return wallet;
   }
 
   @UseGuards(AtGuard)
@@ -61,16 +59,29 @@ export class WalletsController {
       walletNumber,
     );
 
-    const needSync = isAfter(
-      new Date(),
-      addHours(new Date(wallet.lastExternalSyncAt), 12),
+    const categories = wallet?.positions.reduce(
+      (
+        acc: Array<Category & { positions: Array<WalletPosition> }>,
+        position,
+      ) => {
+        const index = acc.findIndex(
+          (item) => item.id == position.asset.category.id,
+        );
+
+        if (index === -1) {
+          acc.push({
+            ...position.asset.category,
+            positions: [position],
+          });
+        } else {
+          acc[index].positions.push(position);
+        }
+
+        return acc;
+      },
+      [],
     );
 
-    if (needSync) {
-      const updatedWallet = await this.syncService.syncWallet(wallet);
-      return parseWallet(updatedWallet);
-    }
-
-    return parseWallet(wallet);
+    return { ...wallet, categories };
   }
 }

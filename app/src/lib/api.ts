@@ -5,20 +5,68 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-// Interceptor de Requisição: Roda ANTES de cada chamada
+let cachedToken: string | null = null;
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+function processQueue(error: any, token: string | null = null) {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+}
+
+async function getValidToken(): Promise<string | null> {
+  // 1. Se já tem no cache, retorna
+  if (cachedToken) return cachedToken;
+
+  // 2. Se já tem alguém buscando (refresh ou busca inicial), entra na fila
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      failedQueue.push({ resolve, reject });
+    });
+  }
+
+  // 3. Se não tem token e ninguém buscando, busca agora
+  isRefreshing = true;
+  try {
+    console.log("🚀 BUSCANDO SESSÃO INICIAL/REFRESH");
+    const session = await getSession();
+
+    if (session?.error === "RefreshAccessTokenError") {
+      throw new Error("RefreshAccessTokenError");
+    }
+
+    const token = session?.tokens?.access_token || null;
+    cachedToken = token;
+
+    // Libera quem estava esperando
+    processQueue(null, token);
+    return token;
+  } catch (error) {
+    processQueue(error, null);
+    cachedToken = null;
+    return null;
+  } finally {
+    isRefreshing = false;
+  }
+}
+
 api.interceptors.request.use(async (config) => {
-  const session = await getSession();
+  const token = await getValidToken();
 
-  const token = session?.tokens?.access_token;
-
-  if (token && !config.headers.Authorization) {
+  if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
 });
 
-// Interceptor de Resposta: Roda APÓS cada chamada (para erros 401)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -27,34 +75,20 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const session = await getSession();
+      cachedToken = null;
+      const newToken = await getValidToken();
 
-      if (session?.error === "RefreshAccessTokenError") {
-        signOut({ callbackUrl: "/" });
-        return Promise.reject(error);
-      }
-
-      if (session?.tokens?.access_token) {
-        originalRequest.headers.Authorization = `Bearer ${session.tokens.access_token}`;
+      if (newToken) {
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
+      } else {
+        await signOut({ callbackUrl: "/", redirect: true });
       }
     }
+
     return Promise.reject(error);
   },
 );
-
-export const fetcher = async <T>([url, manualToken]: [
-  string | null,
-  string?,
-]): Promise<T | null> => {
-  if (!url) return null;
-
-  const res = await api.get<T>(url, {
-    headers: manualToken ? { Authorization: `Bearer ${manualToken}` } : {},
-  });
-
-  return res.data;
-};
 
 export function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {

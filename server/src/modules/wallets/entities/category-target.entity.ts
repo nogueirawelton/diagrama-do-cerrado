@@ -1,8 +1,15 @@
 import { Category } from 'src/modules/assets/entities/category.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { Wallet } from './wallet.entity';
 
 @Entity('category_target')
+@Unique(['wallet', 'category'])
 export class CategoryTarget {
   @PrimaryGeneratedColumn()
   id: number;

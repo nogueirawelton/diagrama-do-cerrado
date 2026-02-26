@@ -3,8 +3,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="w-screen grid-cols-2 h-screen lg:grid ">
-      <div className="bg-secondary-light relative rounded-r-3xl my-4  hidden px-4 lg:px-8 lg:grid place-items-center">
+    <main className="w-screen h-screen grid-cols-2 lg:grid ">
+      <div className="bg-secondary-light relative rounded-r-3xl my-4 hidden px-4 lg:px-8 lg:grid place-items-center">
         <div className="flex items-center text-white flex-col gap-2">
           <Image
             src="/logo.svg"

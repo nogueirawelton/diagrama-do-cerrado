@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CategoryBalance } from './category-balance.entity';
 import { CategoryTarget } from './category-target.entity';
 import { WalletPosition } from './wallet-position.entity';
 
@@ -22,6 +23,30 @@ export class Wallet {
   @Column({ unique: true })
   walletNumber: string;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  applied: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  equity: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 4, default: 0 })
+  variation: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 4, default: 0 })
+  profit: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  payments_12_months: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  variation_payments_12_months: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  payments_total: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  provisioned: number;
+
   @Column({ nullable: true })
   lastExternalSyncAt: Date;
 
@@ -34,10 +59,19 @@ export class Wallet {
   @ManyToOne(() => User, (user) => user.wallets)
   user: User;
 
-  @OneToMany(() => CategoryTarget, (target) => target.wallet, {
-    cascade: true,
-  })
+  @OneToMany(() => CategoryTarget, (target) => target.wallet)
   targets: Array<CategoryTarget>;
+
+  @OneToMany(() => CategoryBalance, (categoryBalance) => categoryBalance.wallet)
+  categoryBalances: Array<CategoryBalance>;
+
+  @Column({ type: 'jsonb', nullable: true })
+  history: {
+    date: string;
+    sum_applied: number;
+    sum_equity: number;
+    profitability: number;
+  }[];
 
   @OneToMany(() => WalletPosition, (position) => position.wallet)
   positions: Array<WalletPosition>;
