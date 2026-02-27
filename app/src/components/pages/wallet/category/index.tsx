@@ -19,7 +19,12 @@ type CategoryProps = {
   balances: Array<CategoryBalance>;
 };
 
-export function Category({ category, targets, balances }: CategoryProps) {
+export function Category({
+  category,
+  walletNumber,
+  targets,
+  balances,
+}: CategoryProps) {
   const categoryBalance = balances.find((b) => b.category.id === category.id);
   const categoryTarget = targets.find((t) => t.category.id === category.id);
 

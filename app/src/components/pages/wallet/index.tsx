@@ -21,7 +21,7 @@ export function WalletContent({ id }: WalletContentProps) {
   const { data: session } = useSession();
 
   const { wallet, isLoading } = useWallet(
-    Number(id || session?.user.lastOpenedWalletNumber),
+    String(id || session?.user.lastOpenedWalletNumber),
   );
 
   const pending = !wallet || isLoading;
