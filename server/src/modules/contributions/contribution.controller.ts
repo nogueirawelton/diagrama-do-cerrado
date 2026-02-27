@@ -7,18 +7,17 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { getDollarRate } from 'src/common/utils/get-dollar-rate';
 import {
   CurrentUser,
   type UserPayload,
 } from '../auth/decorators/current-user.decorator';
 import { AtGuard } from '../auth/guards/at.guard';
-import { WalletsService } from '../wallets/services/wallets.service';
+import { ContributionService } from './contribution.service';
 import { CreateContributionDto } from './dto/create-contribution.dto';
 
 @Controller('contributions')
 export class ContributionController {
-  constructor(private walletsService: WalletsService) {}
+  constructor(private contributionService: ContributionService) {}
 
   @UseGuards(AtGuard)
   @Post(':walletNumber')
@@ -30,13 +29,10 @@ export class ContributionController {
   ) {
     const { sub } = user;
 
-    const wallet = await this.walletsService.findByWalletNumber(
+    return this.contributionService.create(
       sub,
       walletNumber,
+      createContributionDto,
     );
-
-    const rate = await getDollarRate();
-
-    return [];
   }
 }

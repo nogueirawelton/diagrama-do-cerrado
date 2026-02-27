@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { PiCurrencyDollar } from "react-icons/pi";
+import { ContributionDialog } from "../contribution-dialog";
 
 type EvolutionChartProps = {
   history: Array<History>;
@@ -82,10 +82,7 @@ export function EvolutionChart({ history }: EvolutionChartProps) {
           Evolução do Patrimônio
         </strong>
 
-        <button className="h-10 right-0 absolute rounded-md text-sm flex items-center gap-2 font-medium px-4 text-white bg-secondary-dark">
-          <PiCurrencyDollar className="size-5 shrink-0" />
-          Fazer Aporte
-        </button>
+        <ContributionDialog />
       </div>
 
       <div className="w-full border-t border-zinc-200 mt-4 pt-6 h-64">

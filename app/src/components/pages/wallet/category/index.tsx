@@ -21,8 +21,8 @@ type CategoryProps = {
 
 export function Category({
   category,
-  walletNumber,
   targets,
+  walletNumber,
   balances,
 }: CategoryProps) {
   const categoryBalance = balances.find((b) => b.category.id === category.id);
@@ -171,10 +171,16 @@ export function Category({
                   </td>
                   <td className="text-center h-16">{position.quantity}</td>
                   <td className="text-center h-16">
-                    {formatCurrency(position.averagePrice, "BRL")}
+                    {formatCurrency(
+                      position.averagePrice,
+                      position.asset.currency == "R$" ? "BRL" : "USD",
+                    )}
                   </td>
                   <td className="text-center h-16">
-                    {formatCurrency(position.asset.price, "BRL")}
+                    {formatCurrency(
+                      position.asset.price,
+                      position.asset.currency == "R$" ? "BRL" : "USD",
+                    )}
                   </td>
                   <td className="text-center h-16">
                     <div className="flex items-center justify-center gap-2">
@@ -209,7 +215,7 @@ export function Category({
                   <td className="text-center h-16">
                     {formatCurrency(
                       position.asset.price * position.quantity,
-                      "BRL",
+                      position.asset.currency == "R$" ? "BRL" : "USD",
                     )}
                   </td>
                   {position.asset.pl && (

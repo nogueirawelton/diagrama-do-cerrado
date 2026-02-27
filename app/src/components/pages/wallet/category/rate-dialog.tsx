@@ -22,10 +22,16 @@ export function RateDialog({
   category,
 }: RateDialogProps) {
   const [pending, startTransition] = useTransition();
-  const { mutate } = useWallet(walletNumber);
-
-  const questions = getQuestions(category.id);
   const [rate, setRate] = useState(0);
+  const [open, setOpen] = useState(false);
+
+  const { mutate } = useWallet(walletNumber);
+  const questions = getQuestions(category.id);
+
+  const maxRate = questions?.categories.reduce(
+    (acc, category) => acc + category.questions.length,
+    0,
+  );
 
   function handleSaveRate() {
     startTransition(async () => {
@@ -36,6 +42,9 @@ export function RateDialog({
 
         await mutate();
 
+        setOpen(false);
+        setRate(0);
+
         toast.success("Nota salva com sucesso!");
       } catch (error) {
         toast.error("Erro ao salvar nota!");
@@ -44,7 +53,10 @@ export function RateDialog({
   }
 
   return (
-    <Dialog.Root>
+    <Dialog.Root
+      open={open}
+      onOpenChange={setOpen}
+    >
       <Dialog.Trigger className="bg-secondary-light font-medium size-10 mx-auto grid place-items-center rounded-md text-white">
         {position.rate}
       </Dialog.Trigger>
@@ -108,24 +120,26 @@ export function RateDialog({
           </div>
 
           <div className="flex justify-between items-center gap-4">
-            {questions ? (
-              <div className="text-lg text-zinc-500">
-                {rate} /{" "}
-                {questions?.categories.reduce(
-                  (acc, category) => acc + category.questions.length,
-                  0,
-                )}
-              </div>
-            ) : (
+            <div className="flex mt-4 gap-2 items-center">
               <input
                 type="number"
                 value={rate}
-                onChange={(e) => setRate(Number(e.target.value))}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (value > 15) {
+                    setRate(15);
+                  } else if (value < 0) {
+                    setRate(0);
+                  } else {
+                    setRate(value);
+                  }
+                }}
                 max={15}
                 min={0}
-                className="h-10 mt-4 border-zinc-400 border text-secondary-light rounded-md px-4 font-medium text-sm"
-              />
-            )}
+                className="h-10 w-18 border-zinc-400 border text-secondary-light rounded-md px-4 font-medium text-sm"
+              />{" "}
+              / {maxRate}
+            </div>
             <button
               disabled={pending}
               onClick={handleSaveRate}
